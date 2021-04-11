@@ -60,7 +60,6 @@ contract XCoin is ERC20 {
         _transfer(_borrowerAddress, _lenderAddress,_amountXCoin );
 
         payable(_borrowerAddress).transfer(_amountETH);
-//        emit TransferRepayForLenderSuccess();
 
     }
 

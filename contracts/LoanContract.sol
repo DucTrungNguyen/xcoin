@@ -41,7 +41,7 @@ contract LoanContract {
 
 
     event CreateLendingOfferSuccess(uint lendingId);
-    event BorrowingSuccess(uint timestamp);
+    event BorrowingSuccess(uint timestamp, uint id);
 
     event RepaySuccess(uint timestamp);
 
@@ -91,7 +91,7 @@ contract LoanContract {
         IXCoinInterface(XCoinContractAddress).transferCoinForBorrower(msg.sender,
             mappingLendingOffer[_lendingId].addressLender, mappingLendingOffer[_lendingId].amountXCoin);
 
-        emit BorrowingSuccess(block.timestamp);
+        emit BorrowingSuccess(block.timestamp, _lendingId);
 
     }
 
