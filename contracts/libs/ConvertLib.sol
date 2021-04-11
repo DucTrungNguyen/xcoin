@@ -25,8 +25,14 @@ library ConvertLib {
 
     function convertETHToWei(uint amountETH) public pure returns (uint convertedAmount)
     {
-        require(amountXCoin > 0, "Amount ETH coin require more than 0");
+        require(amountETH > 0, "Amount ETH coin require more than 0");
         return amountETH * 10 ** 18;
+    }
+
+    function convertWeiToETH(uint amountETH) public pure returns (uint convertedAmount)
+    {
+        require(amountETH > 0, "Amount ETH coin require more than 0");
+        return amountETH / (10 ** 18);
     }
 
 
@@ -35,6 +41,14 @@ library ConvertLib {
         return amountXCoin * 10 ** 16;
 
     }
+
+    function convertWeiToXCoin(uint amountXCoin) public pure returns (uint convertedAmount) {
+        require(amountXCoin > 0, "Amount X coin require more than 0");
+        return amountXCoin / (10 ** 16);
+
+    }
+
+
 
 
 }

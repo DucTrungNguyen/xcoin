@@ -33,9 +33,12 @@ contract LoanContract {
     mapping(uint => Borrower) public mappingLending;
 
     address XCoinContractAddress;
-    constructor(address _XCoinContractAddress){
+
+    function setXCoinContractAddress(address _XCoinContractAddress) public{
         XCoinContractAddress = _XCoinContractAddress;
+
     }
+
 
     event CreateLendingOfferSuccess(uint lendingId);
     event BorrowingSuccess(uint timestamp);
@@ -51,7 +54,7 @@ contract LoanContract {
     {
         require(amountLending > 0, "Require amount fo lending offer more than 0");
         require(ratingLoan > 0, 'Rating loan more than 0');
-        require(durationSeconds > 0, "Duration more than 0");
+        require(durationDates > 0, "Duration date more than 0");
         require(dailyInterest > 0, "Daily interest more than 0");
 
         lendingOfferIdIndex++;
@@ -83,6 +86,8 @@ contract LoanContract {
         addressBorrower : msg.sender,
         timestampStart : block.timestamp
         });
+
+        payable(XCoinContractAddress).transfer(ConvertLib.convertWeiToETH(mappingLendingOffer[_lendingId].ethRequire));
         IXCoinInterface(XCoinContractAddress).transferCoinForBorrower(msg.sender,
             mappingLendingOffer[_lendingId].addressLender, mappingLendingOffer[_lendingId].amountXCoin);
 
@@ -96,12 +101,11 @@ contract LoanContract {
         require(ConvertLib.convertXCoinToWei(_amountRepay) == getAmountRepay(_lendingIdToRepay), 'amount to repay not correctly');
 
         IXCoinInterface(XCoinContractAddress).transferRepayForLender(msg.sender,
-            mappingLendingOffer[_lendingId].addressLender, ConvertLib.convertXCoinToWei(_amountRepay));
-
+            mappingLendingOffer[_lendingIdToRepay].addressLender, ConvertLib.convertXCoinToWei(_amountRepay),
+            ConvertLib.convertWeiToETH(mappingLendingOffer[_lendingIdToRepay].ethRequire));
 
         mappingLendingOffer[_lendingIdToRepay].isLending = false;
         delete mappingLending[_lendingIdToRepay];
-
 
         emit RepaySuccess(block.timestamp);
 
@@ -112,7 +116,7 @@ contract LoanContract {
         bool  isPayFee = false;
         uint payFee;
         uint XCoinTotalPay;
-        uint currentTimeStamp = bloc.timestamp;
+        uint currentTimeStamp = block.timestamp;
 
         if ( currentTimeStamp - mappingLending[_lendingId].timestampStart < mappingLendingOffer[_lendingId].durationSecond){
             isPayFee = true;
@@ -138,7 +142,7 @@ contract LoanContract {
             profitXCoin= profitPerDay  * mappingLendingOffer[_IDLending].durationDate;
         }else {
             uint timeBorrowByDay;
-            uint timeBorrowBySecond = currentTimeStamp - mappingLending[_lendingId].timestampStart;
+            uint timeBorrowBySecond = _currentTimeStamp - mappingLending[_IDLending].timestampStart;
             uint modTimeSecond = timeBorrowBySecond  % secondPerDay;
             if ( modTimeSecond == 0) {
                 timeBorrowByDay = (timeBorrowBySecond - modTimeSecond) / secondPerDay;
@@ -147,7 +151,6 @@ contract LoanContract {
                 timeBorrowByDay = (timeBorrowBySecond - modTimeSecond) / secondPerDay + 1;
 
             }
-
             profitXCoin = profitPerDay*timeBorrowByDay;
         }
 

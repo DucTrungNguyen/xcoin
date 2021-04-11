@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >= 0.7.0 <= 0.8.1;
 
-import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol';
+//import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol';
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 //import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol';
 import "./libs/ConvertLib.sol";
 
@@ -40,30 +41,26 @@ contract XCoin is ERC20 {
         _transfer(msg.sender, _receiver, ConvertLib.convertXCoinToWei(_amountSend));
     }
 
-    function setLoanContractAddress(address _address){
+    function setLoanContractAddress(address _address) public{
         loanContractAddress = _address;
     }
 
     // lender -> borrower
     function transferCoinForBorrower(address _borrowerAddress, address _lenderAddress, uint _amount) public
     onlyLoanContract {
-        require(_balance[_lenderAddress] > _amount, 'Balance of lender more than amount');
-        _balance[_lenderAddress] -= _amount;
-        _balance[_borrowerAddress] += _amount;
-        emit TransferForBorrowerSuccess();
 
+        _transfer(_lenderAddress, _borrowerAddress,_amount );
     }
 
 
     // borrower -> lender, contract -> eth for borrower
-    function transferRepayForLender(address _borrowerAddress, address _lenderAddress, uint _amount) public
+    function transferRepayForLender(address _borrowerAddress, address _lenderAddress, uint _amountXCoin, uint _amountETH) public
     onlyLoanContract {
-        require(_balance[_borrowerAddress] > _amount, 'Balance of lender more than amount');
-        _balance[_lenderAddress] += _amount;
-        _balance[_borrowerAddress] -= _amount;
 
-        payable(_borrowerAddress).transfer(1);
-        emit TransferRepayForLenderSuccess();
+        _transfer(_borrowerAddress, _lenderAddress,_amountXCoin );
+
+        payable(_borrowerAddress).transfer(_amountETH);
+//        emit TransferRepayForLenderSuccess();
 
     }
 
