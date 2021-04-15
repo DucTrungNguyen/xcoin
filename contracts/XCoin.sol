@@ -5,7 +5,6 @@ pragma solidity >= 0.7.0 <= 0.8.1;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 //import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol';
 import "./libs/ConvertLib.sol";
-
 contract XCoin is ERC20 {
 
     address  public owner;
